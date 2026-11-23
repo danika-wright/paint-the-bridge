@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 22 Q16 2 29 22' fill='none' stroke='%23E74726' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M1 20h30' stroke='%232A2426' stroke-width='2'/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Paint the Bridge</title>
+<meta name="description" content="A five-minute curriculum renewal game for MBA and executive education leaders: mark what your school does today and what you would want, and see where the gaps are.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a pocket inspection log. Choose your steel, then one span of the arch per screen: mark
+   today, then ideal. The gauges show both (solid today, outline ideal), and the condition report
+   ends on the gaps. One look in every theme: the University's navy, deliberately. Ochre is the
+   paint; the gauges take the University's secondary colours, each labelled by name. */
+:root {
+  color-scheme: dark;
+  --bg: #1B355E;        /* University navy */
+  --card: #213F6D;      /* one step lighter */
+  --ink: #FFFFFF;
+  --body: #E9E1D8;      /* sandstone-tinted text */
+  --muted: #B4C0D6;
+  --rule: #33558A;
+  --ochre: #E74726;     /* the paint */
+  --ochre-ink: #F48D75; /* ochre for small text on navy */
+  --steel: #8F9EC8;     /* Jacaranda */
+  --hinge: #71A499;     /* Eucalypt */
+  --hinge-ink: #93C7BB;
+  --crew: #FBEEE2;      /* Sandstone */
+  --rose: #DAA8A2;      /* Heritage Rose */
+  --severe: #C23A1C;
+  --on-chip: #102445;
+  --btn: #E74726;
+  --btn-ink: #FFFFFF;
+  --sel: #2C4C7E;
+  --focus: #FFFFFF;
+  --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+html, body { min-height: 100%; }
+body {
+  background: var(--bg); color: var(--body);
+  font: 400 17px/1.5 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 34rem; margin: 0 auto; padding-block: 20px 48px; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { color: var(--ink); text-wrap: balance; margin: 0; }
+h1 { font: 600 clamp(2.6rem, 11vw, 3.4rem)/1 var(--serif); letter-spacing: -0.01em; }
+h2 { font: 600 clamp(1.8rem, 7vw, 2.2rem)/1.08 var(--serif); }
+h3 { font: 700 1rem/1.3 var(--sans); }
+p { margin: 0; }
+[tabindex="-1"]:focus { outline: none; }
+.lede { font-size: 1.12rem; color: var(--ink); }
+.label { font: 500 0.78rem/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.small { font-size: 0.85rem; color: var(--muted); }
+.hint { font-size: 0.9rem; color: var(--muted); }
+
+/* the bridge, drawn: steel truss, an ochre coat, eucalypt hinge pins, sandstone painters */
+.bridge { display: block; width: 100%; height: auto; overflow: visible; }
+.bridge .pylon { fill: #2A4A7A; }
+.bridge .deck { stroke: var(--muted); stroke-width: 2; fill: none; }
+.bridge .hang { stroke: var(--muted); stroke-width: 1; fill: none; opacity: 0.6; }
+.bridge .chord { stroke: var(--steel); stroke-width: 3; fill: none; stroke-linejoin: round; }
+.bridge .brace { stroke: var(--steel); stroke-width: 1.2; fill: none; }
+.bridge .coat { stroke: var(--ochre); stroke-width: 4.5; fill: none; stroke-linecap: round; }
+.bridge .pin { fill: var(--hinge); }
+.bridge .painter { fill: var(--crew); }
+.bridge .ground { stroke: var(--rule); stroke-width: 1.5; }
+.bridge .lead { stroke-width: 1; fill: none; }
+.bridge text { font: 500 10px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.hero { padding-block: 18px 6px; }
+
+/* buttons */
+button { font: inherit; color: inherit; }
+.go {
+  appearance: none; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--btn); color: var(--btn-ink);
+  font: 700 1.18rem/1 var(--sans); padding: 16px 28px; min-height: 54px;
+}
+.go[disabled] { opacity: 0.35; cursor: default; }
+.ghost {
+  appearance: none; cursor: pointer; background: none; color: var(--ink);
+  border: 1.5px solid var(--rule); border-radius: 999px;
+  font: 700 1.02rem/1 var(--sans); padding: 15px 22px; min-height: 52px;
+}
+.link { appearance: none; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--ochre-ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.go:focus-visible, .ghost:focus-visible, .opt:focus-visible, .link:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.nav .go { margin-left: auto; }
+
+/* the key */
+.key { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; }
+.kr { display: grid; grid-template-columns: 14px 1fr; gap: 12px; align-items: start; }
+.kr .sw { width: 14px; height: 14px; border-radius: 3px; margin-top: 5px; }
+.kr.steel .sw { background: var(--steel); }
+.kr.paint .sw { background: var(--ochre); }
+.kr.hinge .sw { background: var(--hinge); }
+.kr.crew .sw { background: var(--crew); }
+.kr p { font-size: 0.96rem; line-height: 1.4; }
+.kr b { color: var(--ink); }
+
+/* options: steel picks, and today and ideal on each span */
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  appearance: none; text-align: left; cursor: pointer; min-height: 50px;
+  background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 10px;
+  padding: 12px 14px; font: 500 0.98rem/1.3 var(--sans);
+}
+.opt[aria-checked="true"] { border-color: var(--ochre); background: var(--sel); }
+.list .opt { display: grid; grid-template-columns: 1.4rem 1fr; gap: 8px; }
+.list .opt .k { font: 500 0.88rem/1.4 var(--mono); color: var(--muted); }
+.list .opt[aria-checked="true"] .k { color: var(--ochre-ink); }
+.list.now .opt[aria-checked="true"] { border-color: var(--crew); }
+.list.now .opt[aria-checked="true"] .k { color: var(--crew); }
+.qlabel { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.qlabel h3 { font: 700 1.02rem/1.3 var(--sans); }
+.question { font: 700 1.12rem/1.35 var(--sans); color: var(--ink); }
+
+/* arch progress */
+.arch { display: block; width: 100%; height: auto; }
+.arch .seg { fill: none; stroke-width: 9; stroke-linecap: round; }
+.arch .todo { stroke: var(--rule); }
+.arch .done { stroke: var(--ochre); }
+.arch .now { stroke: var(--ink); }
+.arch .deck { stroke: var(--muted); stroke-width: 2; }
+.arch .pier { fill: var(--muted); }
+
+/* gauges: solid today, outline up to the ideal */
+.gauges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.gauge { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.g-steel { --c: var(--steel); } .g-paint { --c: var(--ochre); } .g-hinge { --c: var(--hinge); } .g-crew { --c: var(--crew); }
+.gauge .gl { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 4px; }
+.gauge .gl b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; height: 10px; }
+.bar i { display: block; background: var(--rule); border-radius: 1px; transition: background-color 400ms ease; }
+.bar i.on { background: var(--c); }
+.bar i.gap { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
+.bar i.over { background: var(--c); opacity: 0.35; }
+.legend { font: 400 0.75rem/1.3 var(--mono); color: var(--muted); }
+
+/* a span */
+.note { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.note p { font: 400 0.92rem/1.45 var(--mono); color: var(--ink); }
+.note .src { font-size: 0.74rem; color: var(--muted); }
+.outcome { display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
+.orow { display: flex; flex-direction: column; gap: 6px; }
+.orow p { color: var(--ink); }
+.tag { display: inline-flex; align-items: center; gap: 8px; font: 500 0.76rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 10px; border-radius: 999px; border: 1.5px solid currentColor; align-self: flex-start; }
+.tag.steel { color: var(--steel); }
+.tag.paint { color: var(--ochre-ink); }
+.tag.hinge { color: var(--hinge-ink); }
+.tag.crew, .tag.none { color: var(--muted); }
+.tag svg { width: 14px; height: 14px; }
+.gapline { font: 500 0.9rem/1.4 var(--mono); color: var(--crew); }
+
+/* report */
+.report { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 16px; display: flex; flex-direction: column; gap: 16px; }
+.fields { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font: 400 0.85rem/1.4 var(--mono); color: var(--ink); }
+.fields dt { color: var(--muted); }
+.fields dd { margin: 0; min-width: 0; }
+table.cs { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+table.cs th { text-align: left; font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0 0 6px; }
+table.cs th.n, table.cs td.n { text-align: right; }
+table.cs td { padding: 8px 0; border-top: 1px solid var(--rule); color: var(--ink); vertical-align: top; }
+table.cs td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 8px; }
+table.cs td.gapn { color: var(--crew); font-weight: 500; }
+.pill { display: inline-block; font: 500 0.72rem/1 var(--mono); padding: 5px 8px; border-radius: 999px; background: var(--rule); color: var(--ink); white-space: nowrap; margin-right: 6px; }
+.pill.cs1 { background: var(--hinge); color: var(--on-chip); }
+.pill.cs2 { background: var(--steel); color: var(--on-chip); }
+.pill.cs3 { background: var(--rose); color: var(--on-chip); }
+.pill.cs4 { background: var(--severe); color: #FFFFFF; }
+.verdicts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.verdict { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.verdict h3 { font: 600 1.45rem/1.1 var(--serif); }
+.verdict p.d { font-size: 0.92rem; }
+ol.moves { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: 12px; color: var(--ink); }
+ol.moves b { display: block; }
+ol.moves .ft { display: block; font: 400 0.84rem/1.4 var(--mono); color: var(--muted); margin: 2px 0 4px; }
+.answers { display: flex; flex-direction: column; }
+.ans { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--rule); align-items: center; }
+.ans .t { font: 500 0.72rem/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); grid-column: 1; }
+.ans .c { color: var(--ink); font-size: 0.93rem; grid-column: 1; }
+.ans .link { grid-column: 2; grid-row: 1 / span 2; font-size: 0.92rem; }
+details { border-top: 1px solid var(--rule); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 700; color: var(--ink); }
+details ul { margin: 10px 0 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; }
+details p { margin-top: 10px; font-size: 0.9rem; }
+.copybox { width: 100%; min-height: 9rem; font: 400 0.8rem/1.4 var(--mono); color: var(--ink); background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 10px; }
+
+.screen > * { animation: rise 420ms ease both; }
+.screen > *:nth-child(2) { animation-delay: 60ms; }
+.screen > *:nth-child(3) { animation-delay: 120ms; }
+.screen > *:nth-child(4) { animation-delay: 180ms; }
+.outcome { animation: rise 360ms ease both; }
+@keyframes rise { from { opacity: 0.001; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  .screen > *, .outcome { animation: none; }
+  .bar i { transition: none; }
+}
+@media (max-width: 380px) { .opts { grid-template-columns: 1fr; } .gauges { gap: 6px; } .verdicts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+<noscript><p style="padding:24px">Paint the Bridge needs JavaScript to run.</p></noscript>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ------------------------------------------------------------------ data */
+  const STEEL = [
+    'Judgement under uncertainty', 'Leading people', 'Ethics and responsibility',
+    'Thinking with numbers', 'Communicating to persuade', 'Seeing whole systems',
+  ];
+
+  // Each span: one line of situation, a field note, short options. d = gauge changes
+  // {s steel, p paint, h hinges, c crew}; speed = how much faster the program can change;
+  // start = the first step towards that option, used when it is the ideal and today differs.
+  const SPANS = [
+    {
+      title: 'The map moves',
+      situation: 'The skills employers want have changed. Your core curriculum has not.',
+      note: 'A third of the skills in the average US job changed in just three years.',
+      src: 'Lightcast, The Speed of Skill Change (2025)',
+      question: 'How does your program respond?',
+      choices: [
+        { text: 'A new compulsory AI course', layer: 'steel', tag: 'Steel for a paint job', out: 'It is a good course, but it takes the slow route through committee. The skills will have moved again by the time it runs.', d: { s: 1, p: 1, c: -1 }, speed: -1,
+          start: 'Write its outcome around a capability, not a tool, before it goes to committee.' },
+        { text: 'Fresh cases and tools in every course', layer: 'paint', tag: 'Paint', out: 'Fast and visible. You will need to do it again next year.', d: { p: 2, c: -1 },
+          start: 'Ask every course team for one new case or tool before the course next runs.' },
+        { text: 'A live slot in the core, with a new topic each year', layer: 'hinge', tag: 'Hinge', out: 'Approve it once, then refresh it every year. That is a hinge.', d: { p: 1, h: 2 }, speed: 1,
+          start: 'Propose one core course with a fixed outcome and a topic chosen each year.' },
+        { text: 'Nothing yet', nothing: true, layer: 'none', tag: 'Not started', out: 'The skills have moved, and the program has not.', d: { p: -1 },
+          start: 'Read this year’s skills research with your program directors and agree on one change.' },
+      ],
+    },
+    {
+      title: 'The first rung',
+      situation: 'AI now does much of the junior work your graduates used to start on.',
+      note: 'One in three employers has already replaced some entry-level roles with AI.',
+      src: 'GMAC, Corporate Recruiters Survey (2026)',
+      question: 'How does your program prepare graduates for this?',
+      choices: [
+        { text: 'An AI tools bootcamp', layer: 'paint', tag: 'Paint', out: 'Useful for a semester. By graduation, everyone has the same tools.', d: { p: 1 },
+          start: 'Add an AI tools session to orientation for the next intake.' },
+        { text: 'Live client work, with feedback', layer: 'steel', tag: 'Steel', out: 'It is harder to run, but it is where judgement comes from.', d: { s: 2, c: -1 },
+          start: 'Find one core course that could run on a live client brief next time.' },
+        { text: 'Paid projects with employers', layer: 'hinge', tag: 'Hinge', out: 'Students get the practice at work and bring the problems back to class.', d: { s: 1, h: 1, c: -1 },
+          start: 'Ask your three biggest recruiters to co-design one paid project role.' },
+        { text: 'Nothing yet', nothing: true, layer: 'none', tag: 'Not started', out: 'Your graduates will find the gap in their first job.', d: { s: -1 },
+          start: 'Ask recruiters which junior tasks AI now does, and what they expect of graduates instead.' },
+      ],
+    },
+    {
+      title: 'No one wants your job',
+      situation: 'Fewer applicants say they want to manage people, yet your program sells leadership.',
+      note: '41% of jobseekers do not see being a leader in their career plan.',
+      src: 'Aerotek (2026), as cited in The 2027 Skills Horizon',
+      question: 'How does your program respond?',
+      choices: [
+        { text: 'A rebrand and more marketing', layer: 'paint', tag: 'Paint', out: 'The titles are new, but the experience is the same.', d: { p: 1 },
+          start: 'Test new names and messages with this year’s applicants.' },
+        { text: 'A real problem to lead, new each year', layer: 'hinge', tag: 'Hinge', out: 'Leadership becomes a cause, not a job title.', d: { s: 1, h: 1 },
+          start: 'Choose next year’s cohort problem with an outside partner.' },
+        { text: 'Leadership assessed like expertise', layer: 'steel', tag: 'Steel', out: 'A promise in the brochure becomes something every graduate can show.', d: { s: 2, c: -1 },
+          start: 'Pick one leadership behaviour and assess it, by observation, in one core course.' },
+        { text: 'Nothing yet', nothing: true, layer: 'none', tag: 'Not started', out: 'You are still selling a job that fewer people want.', d: {},
+          start: 'Ask this year’s applicants what would make leading worth it.' },
+      ],
+    },
+    {
+      title: 'Too good to be true',
+      situation: 'Assignments have never looked better. Exam results say otherwise.',
+      note: 'Students given an AI that supplied answers did 48% better in practice, then worse in the exam. Students given an AI tutor did 127% better, with no harm.',
+      src: 'Bastani et al., PNAS (2025)',
+      question: 'What is your school’s approach to AI in assessment?',
+      choices: [
+        { text: 'A ban on AI in assessment', layer: 'none', tag: 'Neither steel nor paint', out: 'It is easy to announce and impossible to enforce.', d: { p: -1, c: -1 },
+          start: 'Write down how a ban would be checked. If it cannot be, choose another option.' },
+        { text: 'Two lanes: secure tasks and open tasks', layer: 'steel', tag: 'Steel', out: 'Students learn both the work and the tools.', d: { s: 2, p: 1, c: -1 },
+          start: 'Sort one course’s assessments into secure and open tasks, and close any gaps.' },
+        { text: 'AI allowed everywhere', layer: 'paint', tag: 'Paint over rust', out: 'The work is polished, but nobody knows who learned what.', d: { p: 1, s: -2 },
+          start: 'Decide what every graduate must show without AI before allowing it everywhere.' },
+        { text: 'It varies by course', nothing: true, layer: 'none', tag: 'Not started', out: 'Nobody can say what a graduate can do alone.', d: { s: -1 },
+          start: 'Find out what each course does about AI today. Expect it to be uneven.' },
+      ],
+    },
+    {
+      title: 'The alumni gap',
+      situation: 'Your graduates keep learning after they leave. Mostly, they do not do it with you.',
+      note: '98% of business school graduates call themselves lifelong learners, but 55% have not learned with their school since graduating.',
+      src: 'AMBA & BGA, Never Stop Learning',
+      question: 'What does your school offer its graduates?',
+      choices: [
+        { text: 'An alumni newsletter', layer: 'paint', tag: 'Paint', out: 'It is opened by some and acted on by few.', d: { p: 1 },
+          start: 'Send one issue, and count who clicks through to something they can join.' },
+        { text: 'Short courses that stack into a degree', layer: 'hinge', tag: 'Hinge', out: 'The door stays open, and graduates come back through it.', d: { h: 2, c: -1 },
+          start: 'Map one short course to credit in a degree.' },
+        { text: 'Ten years to come back for new courses', layer: 'hinge', tag: 'Hinge', out: 'The degree becomes a relationship. NUS offers its graduates twenty years.', d: { h: 2, p: 1, c: -1 },
+          start: 'Cost a ten-year return option for one cohort.' },
+        { text: 'Nothing yet', nothing: true, layer: 'none', tag: 'Not started', out: 'Your graduates keep learning, but somewhere else.', d: { h: -1 },
+          start: 'Ask your last three cohorts where they learn now.' },
+      ],
+    },
+    {
+      title: 'The approval queue',
+      situation: 'Changing a program’s outcomes means going through the same committees as a new degree.',
+      note: 'Employers rank AI skills 14th in importance today, and expect them to rank first in five years.',
+      src: 'GMAC, Corporate Recruiters Survey (2026)',
+      question: 'How does your school handle changes?',
+      choices: [
+        { text: 'Changes held for the next full review', layer: 'none', tag: 'Rust', out: 'There is less work now, but more rust later.', d: { p: -2, c: 1 }, speed: -2,
+          start: 'In your next board paper, put the date of your next full review beside how fast skills are changing.' },
+        { text: 'Outcomes rewritten so they do not name tools', layer: 'hinge', tag: 'Paint out of the steel', out: 'Tools can now change inside courses, without a committee.', d: { p: 1, h: 2 }, speed: 2,
+          start: 'Find every outcome that names a tool or a trend, and rewrite it to last.' },
+        { text: 'Paperwork drafted by AI', layer: 'crew', tag: 'Robots', out: 'The forms get easier, but the queue stays the same.', d: { c: 1 }, speed: 1,
+          start: 'Pilot AI on one change proposal and its mapping.' },
+      ],
+    },
+    {
+      title: 'The grit-blasting',
+      situation: 'Your educators spend weeks each year on mapping and alignment paperwork.',
+      note: 'In 2013, robots took over blasting old paint off the Sydney Harbour Bridge’s hardest-to-reach steel. A worker still presses go.',
+      src: 'SBS News (2013)',
+      question: 'Who does that work?',
+      choices: [
+        { text: 'New learning designers', layer: 'crew', tag: 'Crew', out: 'They are good people, but they are a budget line to defend every year.', d: { c: 1, p: 1 },
+          start: 'Write the case for two learning designers.' },
+        { text: 'AI, with educators deciding', layer: 'crew', tag: 'Robots', out: 'The grit-blasting gets done, and people focus on judgement.', d: { c: 2, p: 1 }, speed: 1,
+          start: 'Pilot AI mapping and stale-content checks on one program.' },
+        { text: 'The educators, as always', layer: 'none', tag: 'Rust', out: 'The steel is fine, but the crew is tired.', d: { c: -2 }, speed: -1,
+          start: 'Count the hours your educators spend on mapping each year.' },
+      ],
+    },
+  ];
+
+  const ICONS = {
+    steel: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h12v2.5H9.5v7H14V14H2v-2.5h4.5v-7H2z" fill="currentColor"/></svg>',
+    paint: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h9v4H2zM11 3.5h2.5V8H7.5v2H9v4H6v-4h.5V6.8h6V4.8H11z" fill="currentColor"/></svg>',
+    hinge: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M1 14 6 9.6M15 14 10 9.6" stroke="currentColor" stroke-width="2" fill="none"/></svg>',
+    crew: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="3" fill="currentColor"/><path d="M2.5 15c.4-3.2 2.6-5 5.5-5s5.1 1.8 5.5 5z" fill="currentColor"/></svg>',
+    none: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 12 12 4" stroke="currentColor" stroke-width="2"/></svg>',
+  };
+
+  /* ----------------------------------------------------------------- state */
+  // Two answers per span, today and ideal. Both sets of gauges are worked out from scratch from
+  // the answers as they stand, so any answer can be changed at any time.
+  const app = document.getElementById('app');
+  const BASE = { s: 4, p: 4, h: 3, c: 6 };
+  let S;
+  const fresh = () => ({ picks: [], now: SPANS.map(() => null), ideal: SPANS.map(() => null), span: 0, fromReport: false });
+
+  const clamp = v => Math.max(0, Math.min(10, v));
+  const esc = t => String(t).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const idealIdx = i => (S.ideal[i] != null ? S.ideal[i] : S.now[i]);   // until chosen, ideal = today
+  const pick = (i, which) => { const k = which === 'now' ? S.now[i] : idealIdx(i); return k == null ? null : SPANS[i].choices[k]; };
+  const done = i => S.now[i] != null && S.ideal[i] != null;
+  const lbl = c => c.text;
+
+  function gaugesOf(which) {
+    const g = { ...BASE };
+    g.s += S.picks.length;
+    SPANS.forEach((sp, i) => { const c = pick(i, which); if (c) Object.keys(c.d).forEach(k => { g[k] += c.d[k]; }); });
+    Object.keys(g).forEach(k => { g[k] = clamp(g[k]); });
+    return g;
+  }
+  const speedOf = which => SPANS.reduce((v, sp, i) => { const c = pick(i, which); return v + (c && c.speed ? c.speed : 0); }, 0);
+
+  /* ------------------------------------------------------------ components */
+  function arch(now) {
+    const n = SPANS.length, x0 = 14, x1 = 306, top = 12, base = 70;
+    const y = x => base - (base - top) * (1 - Math.pow((x - 160) / ((x1 - x0) / 2), 2));
+    let segs = '';
+    for (let i = 0; i < n; i++) {
+      const a = x0 + (x1 - x0) * i / n + 4, b = x0 + (x1 - x0) * (i + 1) / n - 4;
+      let d = `M${a.toFixed(1)} ${y(a).toFixed(1)}`;
+      for (let k = 1; k <= 8; k++) { const x = a + (b - a) * k / 8; d += ` L${x.toFixed(1)} ${y(x).toFixed(1)}`; }
+      const cls = i === now ? 'now' : (done(i) ? 'done' : 'todo');
+      segs += `<path class="seg ${cls}" d="${d}"/>`;
+    }
+    const painted = SPANS.filter((sp, i) => done(i)).length;
+    const label = now >= 0 ? `Span ${now + 1} of ${n}` : `${painted} of ${n} spans painted`;
+    return `<svg class="arch" viewBox="0 0 320 92" role="img" aria-label="${label}">
+      ${segs}<path class="deck" d="M4 58 H316"/><rect class="pier" x="2" y="54" width="10" height="34" rx="1"/><rect class="pier" x="308" y="54" width="10" height="34" rx="1"/></svg>`;
+  }
+
+  // The bridge, drawn from scores: the truss fades as steel weakens, the ochre coat runs as far as
+  // the paint score, the hinge pins grow with the hinges score, and painters stand on the arch for
+  // the crew. With labels, it names the four parts.
+  function bridgeSVG(g, labels, aria) {
+    const par = (x0, x1, yb, yc) => x => yb - (yb - yc) * (1 - Math.pow((x - (x0 + x1) / 2) / ((x1 - x0) / 2), 2));
+    const U = par(30, 290, 98, 22), L = par(44, 276, 102, 44);
+    const line = (f, x0, x1, n) => { let d = ''; for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n; d += `${i ? ' L' : 'M'}${x.toFixed(1)} ${f(x).toFixed(1)}`; } return d; };
+    const N = 14, xs = Array.from({ length: N + 1 }, (_, i) => 44 + (276 - 44) * i / N);
+    let brace = '', hang = '';
+    xs.forEach((x, i) => {
+      brace += `M${x.toFixed(1)} ${U(x).toFixed(1)}L${x.toFixed(1)} ${L(x).toFixed(1)}`;
+      if (i < N) {
+        const x2 = xs[i + 1];
+        brace += i % 2 ? `M${x.toFixed(1)} ${U(x).toFixed(1)}L${x2.toFixed(1)} ${L(x2).toFixed(1)}` : `M${x.toFixed(1)} ${L(x).toFixed(1)}L${x2.toFixed(1)} ${U(x2).toFixed(1)}`;
+      }
+      if (L(x) < 72) hang += `M${x.toFixed(1)} ${L(x).toFixed(1)}L${x.toFixed(1)} 74`;
+    });
+    const s = g.s / 10, p = g.p / 10, h = g.h / 10;
+    const crew = Math.max(0, Math.min(4, Math.round(g.c / 2.5)));
+    const painters = [0.3, 0.45, 0.6, 0.75].slice(0, crew).map(f => { const x = 30 + 260 * f; return `<circle class="painter" cx="${x.toFixed(1)}" cy="${(U(x) - 6).toFixed(1)}" r="3.2"/>`; }).join('');
+    const pin = x => `<circle class="pin" cx="${x}" cy="104" r="${(3 + 3.5 * h).toFixed(1)}" style="opacity:${(0.4 + 0.6 * h).toFixed(2)}"/>`;
+    const top = labels ? 16 : 0;
+    const lab = labels ? `
+      <path class="lead" d="M44 ${top + 2}L74 ${top + 48}" style="stroke:var(--steel)"/><text x="10" y="${top}" style="fill:var(--steel)">Steel</text>
+      <path class="lead" d="M88 ${top - 2}L105 ${top + 22}" style="stroke:var(--crew)"/><text x="68" y="${top - 6}" style="fill:var(--crew)">Crew</text>
+      <path class="lead" d="M238 ${top}L210 ${top + 16}" style="stroke:var(--ochre-ink)"/><text x="242" y="${top + 2}" style="fill:var(--ochre-ink)">Paint</text>
+      <path class="lead" d="M58 128L42 112" style="stroke:var(--hinge-ink)"/><text x="62" y="132" style="fill:var(--hinge-ink)">Hinges</text>` : '';
+    return `<svg class="bridge" viewBox="0 ${labels ? -6 : 0} 320 ${labels ? 144 : 120}" role="img" aria-label="${esc(aria)}">
+      <rect class="pylon" x="4" y="58" width="22" height="58" rx="2"/><rect class="pylon" x="294" y="58" width="22" height="58" rx="2"/>
+      <path class="hang" d="${hang}"/><path class="deck" d="M0 74H320"/>
+      <g style="opacity:${(0.25 + 0.75 * s).toFixed(2)}"><path class="brace" d="${brace}"/><path class="chord" d="${line(U, 30, 290, 48)} ${line(L, 44, 276, 44)} M30 98L37 106L44 102 M290 98L283 106L276 102"/></g>
+      <path class="coat" d="${line(U, 30, 290, 48)}" pathLength="100" stroke-dasharray="${Math.round(p * 100)} 100"/>
+      ${pin(37)}${pin(283)}${painters}
+      <path class="ground" d="M0 116H320"/>${lab}</svg>`;
+  }
+
+  function gauges() {
+    const a = gaugesOf('now'), b = gaugesOf('ideal');
+    const rows = [['s', 'Steel', 'g-steel'], ['p', 'Paint', 'g-paint'], ['h', 'Hinges', 'g-hinge'], ['c', 'Crew', 'g-crew']];
+    return `<div class="stack" style="gap:6px"><div class="gauges">${rows.map(([k, name, cls]) => {
+      const now = a[k], ideal = b[k], lo = Math.min(now, ideal);
+      let cells = '';
+      for (let i = 0; i < 10; i++) cells += `<i class="${i < lo ? 'on' : (i < ideal ? 'gap' : (i < now ? 'over' : ''))}"></i>`;
+      const num = now === ideal ? `${now}` : `${now}→${ideal}`;
+      return `<div class="gauge ${cls}" role="meter" aria-label="${name}" aria-valuemin="0" aria-valuemax="10" aria-valuenow="${now}" aria-valuetext="today ${now}, ideal ${ideal}">
+        <span class="gl">${name}<b>${num}</b></span><div class="bar">${cells}</div></div>`;
+    }).join('')}</div><p class="legend">Solid shows today. Outline shows your ideal.</p></div>`;
+  }
+
+  function show(html, focusSel) {
+    app.innerHTML = `<div class="screen stack" style="gap:20px">${html}</div>`;
+    window.scrollTo(0, 0);
+    const f = app.querySelector(focusSel || 'h1, h2');
+    if (f) { f.setAttribute('tabindex', '-1'); f.focus({ preventScroll: true }); }
+  }
+
+  /* --------------------------------------------------------------- screens */
+  function start() {
+    S = fresh();
+    show(`
+      <div class="hero">${bridgeSVG({ s: 10, p: 6, h: 10, c: 10 }, false, 'The Sydney Harbour Bridge, drawn: a steel arch resting on hinge pins, part painted, with painters on top')}</div>
+      <div class="stack">
+        <h1>Paint the Bridge</h1>
+        <p>There are seven decisions. For each one, mark what your school does today and what you would want ideally. The gaps between the two are your plan.</p>
+      </div>
+      <div class="stack" style="gap:10px">
+        <button class="go" data-act="steel" style="align-self:flex-start">Start</button>
+        <p class="small">It takes about five minutes. Be honest about today. You can change any answer before the end, and nothing you choose leaves your device.</p>
+      </div>`, 'h1');
+  }
+
+  function steel() {
+    const n = S.picks.length;
+    const primary = S.fromReport
+      ? `<button class="go" data-act="toreport" ${n === 2 ? '' : 'disabled'}>Back to report</button>`
+      : `<button class="go" data-act="begin" ${n === 2 ? '' : 'disabled'}>Start painting</button>`;
+    show(`
+      <div class="stack" style="gap:8px">${arch(-1)}
+        <p class="label">Before you climb</p><h2>Choose your steel</h2></div>
+      ${bridgeSVG({ s: 10, p: 7, h: 10, c: 10 }, true, 'The bridge with its four parts named: the steel arch, the paint, the hinge pins at its base, and the crew of painters')}
+      <div class="key" role="list" aria-label="What the words mean">
+        <div class="kr steel" role="listitem"><span class="sw"></span><p><b>Steel</b> is what lasts for decades. Change it rarely.</p></div>
+        <div class="kr paint" role="listitem"><span class="sw"></span><p><b>Paint</b> is what dates within a year, such as tools, cases and AI. Refresh it every time a course runs.</p></div>
+        <div class="kr hinge" role="listitem"><span class="sw"></span><p><b>Hinges</b> are the joints that let a program move.</p></div>
+        <div class="kr crew" role="listitem"><span class="sw"></span><p><b>Crew</b> means your educators, program directors and faculty leaders.</p></div>
+      </div>
+      <p class="lede">Pick the two capabilities your program will protect, whatever comes next.</p>
+      <div class="opts" role="group" aria-label="Pick two">
+        ${STEEL.map((t, i) => `<button class="opt" role="checkbox" aria-checked="${S.picks.includes(i)}" data-act="steelpick" data-i="${i}">${esc(t)}</button>`).join('')}
+      </div>
+      <p class="hint" id="pickhint">${n === 2 ? 'You have chosen two. Tap another to swap.' : (n === 1 ? 'Choose one more.' : 'Choose two.')}</p>
+      <div class="nav">${S.fromReport ? '' : '<button class="ghost" data-act="home">Back</button>'}${primary}</div>`);
+  }
+
+  function steelPick(i) {
+    if (S.picks.includes(i)) S.picks = S.picks.filter(x => x !== i);
+    else { S.picks.push(i); if (S.picks.length > 2) S.picks.shift(); }
+    app.querySelectorAll('[data-act="steelpick"]').forEach(b => b.setAttribute('aria-checked', String(S.picks.includes(Number(b.dataset.i)))));
+    const n = S.picks.length;
+    const hint = app.querySelector('#pickhint');
+    if (hint) hint.textContent = n === 2 ? 'You have chosen two. Tap another to swap.' : (n === 1 ? 'Choose one more.' : 'Choose two.');
+    const go = app.querySelector('[data-act="begin"], [data-act="toreport"]');
+    if (go) go.disabled = n !== 2;
+  }
+
+  // Today lists every option. Ideally is a choice of next step: keep today's answer, or move to
+  // one of the others ("Nothing yet" is never offered as an ideal).
+  function listHTML(which) {
+    const sp = SPANS[S.span];
+    const now = S.now[S.span];
+    const head = which === 'now' ? 'Today, at your school' : 'Ideally';
+    if (which === 'ideal' && now == null) return `<div class="stack" style="gap:8px"><p class="label" id="q-ideal">${head}</p><p class="hint">Mark today first.</p></div>`;
+    const sel = which === 'now' ? now : S.ideal[S.span];
+    const items = which === 'now'
+      ? sp.choices.map((c, i) => ({ i, t: c.text }))
+      : [{ i: now, t: 'Keep what we do now' }].concat(sp.choices.map((c, i) => ({ i, t: c.text, c })).filter(o => o.i !== now && !o.c.nothing));
+    return `<div class="stack" style="gap:8px"><p class="label" id="q-${which}">${head}</p>
+      <div class="list ${which}" role="radiogroup" aria-label="${esc(head + ': ' + sp.question)}">
+        ${items.map((o, k) => `<button class="opt" role="radio" aria-checked="${sel === o.i}" data-act="${which}" data-i="${o.i}"><span class="k">${'ABCD'[k]}</span><span>${esc(o.t)}</span></button>`).join('')}
+      </div></div>`;
+  }
+
+  const tagHTML = c => `<span class="tag ${c.layer}">${ICONS[c.layer] || ICONS.none}${esc(c.tag)}</span>`;
+
+  function outcomeHTML() {
+    if (!done(S.span)) return '';
+    const sp = SPANS[S.span], a = sp.choices[S.now[S.span]], b = sp.choices[S.ideal[S.span]];
+    if (a === b) return `<div class="outcome"><div class="orow">${tagHTML(a)}<p>${esc(a.out)}</p></div><p class="gapline">No gap here.</p></div>`;
+    return `<div class="outcome">
+      <div class="orow"><p class="label">Today</p>${tagHTML(a)}<p>${esc(a.out)}</p></div>
+      <div class="orow"><p class="label">Ideally</p>${tagHTML(b)}<p>${esc(b.out)}</p></div></div>`;
+  }
+
+  function navHTML() {
+    const ok = done(S.span);
+    if (S.fromReport) return `<div class="nav"><button class="go" data-act="toreport" ${ok ? '' : 'disabled'}>Back to report</button></div>`;
+    const label = S.span === SPANS.length - 1 ? 'See my report' : 'Next span';
+    return `<div class="nav"><button class="ghost" data-act="back">Back</button><button class="go" data-act="next" ${ok ? '' : 'disabled'}>${label}</button></div>`;
+  }
+
+  function span() {
+    const sp = SPANS[S.span];
+    show(`
+      <div class="stack" style="gap:8px">${arch(S.span)}
+        <p class="label">Span ${S.span + 1} of ${SPANS.length}</p><h2>${esc(sp.title)}</h2></div>
+      <div id="gbox">${gauges()}</div>
+      <p class="lede">${esc(sp.situation)}</p>
+      <div class="note"><p>${esc(sp.note)}</p><p class="src">${esc(sp.src)}</p></div>
+      <h3 class="question">${esc(sp.question)}</h3>
+      <div id="lists" class="stack" style="gap:18px">${listHTML('now')}<div id="ibox">${listHTML('ideal')}</div></div>
+      <div id="out">${outcomeHTML()}</div>
+      <div id="navbox">${navHTML()}</div>`);
+  }
+
+  function answer(which, i) {
+    const wasDone = done(S.span);
+    if (which === 'now') {
+      S.now[S.span] = i;
+      const id = S.ideal[S.span];
+      if (id != null && id !== i && SPANS[S.span].choices[id].nothing) S.ideal[S.span] = null;
+      app.querySelectorAll('.list.now .opt').forEach(b => b.setAttribute('aria-checked', String(Number(b.dataset.i) === i)));
+      app.querySelector('#ibox').innerHTML = listHTML('ideal');
+    } else {
+      S.ideal[S.span] = i;
+      app.querySelectorAll('.list.ideal .opt').forEach(b => b.setAttribute('aria-checked', String(Number(b.dataset.i) === i)));
+    }
+    app.querySelector('#gbox').innerHTML = gauges();
+    const ar = app.querySelector('.arch'); if (ar) ar.outerHTML = arch(S.span);
+    app.querySelector('#out').innerHTML = outcomeHTML();
+    app.querySelector('#navbox').innerHTML = navHTML();
+    if (!wasDone && done(S.span)) {
+      const nb = app.querySelector('#navbox');
+      if (nb.getBoundingClientRect().bottom > window.innerHeight) nb.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'end' });
+    } else if (which === 'now' && S.ideal[S.span] == null) {
+      const q = app.querySelector('#q-ideal');
+      if (q && q.getBoundingClientRect().top > window.innerHeight * 0.75) q.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
+    }
+  }
+
+  function condition(v) {
+    if (v >= 8) return ['cs1', 'Good'];
+    if (v >= 5) return ['cs2', 'Fair'];
+    if (v >= 3) return ['cs3', 'Poor'];
+    return ['cs4', 'Severe'];
+  }
+  const clockOf = v => (v >= 2 ? 'Fast' : (v >= 0 ? 'Steady' : 'Slow'));
+
+  function verdict(g) {
+    if (g.c <= 2) return ['The Tired Crew', 'It looks fine from the harbour, but the painters are exhausted.'];
+    if (g.s >= 7 && g.p >= 6 && g.h >= 6) return ['The Living Bridge', 'Strong steel, fresh paint and hinges that move.'];
+    if (g.s >= 7 && g.p <= 4) return ['The Monument', 'It is solid and handsome, but the paint is peeling.'];
+    if (g.p >= 7 && g.s <= 4) return ['The Scaffold', 'It is always being renovated, and nothing holds it together.'];
+    if (g.h >= 7 && g.s <= 5) return ['The Toll Road', 'There are plenty of ways on and off, but not much bridge.'];
+    return ['Work in Progress', 'It is sound in places and rusting in others.'];
+  }
+
+  // The gaps: spans where today and ideal differ, biggest first.
+  function gaps() {
+    const out = [];
+    SPANS.forEach((sp, i) => {
+      if (S.now[i] === S.ideal[i]) return;
+      const a = sp.choices[S.now[i]], b = sp.choices[S.ideal[i]];
+      let size = Math.abs((b.speed || 0) - (a.speed || 0));
+      ['s', 'p', 'h', 'c'].forEach(k => { size += Math.abs((b.d[k] || 0) - (a.d[k] || 0)); });
+      out.push({ i, title: sp.title, from: a.text, to: lbl(b, 'ideal'), start: b.start, size });
+    });
+    return out.sort((x, y) => y.size - x.size || x.i - y.i);
+  }
+
+  function reportText(a, b, va, vb, gp) {
+    const L = ['PAINT THE BRIDGE: CONDITION REPORT'];
+    L.push(`Today: Steel ${a.s}, Paint ${a.p}, Hinges ${a.h}, Crew ${a.c} (out of 10). Clock: ${clockOf(speedOf('now'))}. ${va[0]}.`);
+    L.push(`Ideal: Steel ${b.s}, Paint ${b.p}, Hinges ${b.h}, Crew ${b.c}. Clock: ${clockOf(speedOf('ideal'))}. ${vb[0]}.`);
+    L.push(`Steel to protect: ${S.picks.map(i => STEEL[i]).join(', ')}`);
+    L.push(gp.length ? 'Biggest gaps, and where to start:' : 'No gaps: today matches your ideal on every decision.');
+    gp.slice(0, 3).forEach((g, n) => L.push(`${n + 1}. ${g.title}: ${g.from} -> ${g.to}. Start by: ${g.start}`));
+    L.push('All answers (today -> ideal):');
+    SPANS.forEach((sp, i) => L.push(`- ${sp.title}: ${S.now[i] === S.ideal[i] ? sp.choices[S.now[i]].text + ' (no change)' : sp.choices[S.now[i]].text + ' -> ' + lbl(sp.choices[S.ideal[i]], 'ideal')}`));
+    return L.join('\n');
+  }
+
+  function report() {
+    S.fromReport = false;
+    const a = gaugesOf('now'), b = gaugesOf('ideal');
+    const va = verdict(a), vb = verdict(b), gp = gaps();
+    const today = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+    const rows = [['s', 'Steel'], ['p', 'Paint'], ['h', 'Hinges'], ['c', 'Crew']];
+    const top = gp.slice(0, 3);
+    const movesHTML = top.length
+      ? `<ol class="moves">${top.map(g => `<li><b>${esc(g.title)}</b><span class="ft">${esc(g.from)} → ${esc(g.to)}</span>Start by: ${esc(g.start)}</li>`).join('')}</ol>`
+      : `<p>Today matches your ideal on every decision. Either your program is in fine shape, or it is worth asking a colleague to answer the “today” side.</p>`;
+    S.text = reportText(a, b, va, vb, gp);
+    show(`
+      <div class="stack" style="gap:8px">${arch(-1)}<p class="label">Inspection complete</p><h2>Condition report</h2></div>
+      <div class="report">
+        <dl class="fields">
+          <dt>Structure</dt><dd>Your program</dd>
+          <dt>Inspected</dt><dd>${esc(today)}</dd>
+          <dt>Clock</dt><dd>${clockOf(speedOf('now'))} today, ${clockOf(speedOf('ideal')).toLowerCase()} ideally</dd>
+        </dl>
+        <div class="verdicts">
+          <div class="verdict"><p class="label">Today</p>${bridgeSVG(a, false, `Your program today, drawn as a bridge: steel ${a.s}, paint ${a.p}, hinges ${a.h}, crew ${a.c} out of 10`)}<h3>${esc(va[0])}</h3><p class="d">${esc(va[1])}</p></div>
+          <div class="verdict"><p class="label">Ideally</p>${bridgeSVG(b, false, `Your program ideally, drawn as a bridge: steel ${b.s}, paint ${b.p}, hinges ${b.h}, crew ${b.c} out of 10`)}<h3>${esc(vb[0])}</h3><p class="d">${esc(vb[1])}</p></div>
+        </div>
+        <table class="cs"><thead><tr><th scope="col">Layer</th><th scope="col">Today</th><th scope="col" class="n">Ideal</th><th scope="col" class="n">Gap</th></tr></thead><tbody>
+          ${rows.map(([k, n]) => { const [cls, word] = condition(a[k]); const g = b[k] - a[k]; return `<tr><td>${n}</td><td><span class="pill ${cls}">${word}</span>${a[k]}</td><td class="n">${b[k]}</td><td class="n gapn">${g > 0 ? '+' + g : (g < 0 ? '−' + Math.abs(g) : '0')}</td></tr>`; }).join('')}
+        </tbody></table>
+        <div class="stack" style="gap:10px"><p class="label">Three moves for Monday: your biggest gaps</p>${movesHTML}</div>
+        <p class="small">Then measure your clock: add your approval lead time to the time it takes to graduate.</p>
+      </div>
+      <div class="stack" style="gap:8px">
+        <p class="label">Your answers</p>
+        <p class="hint">Not quite right? Change any answer and the report updates.</p>
+        <div class="answers">
+          <div class="ans"><span class="t">Your steel</span><span class="c">${S.picks.map(i => esc(STEEL[i])).join(' and ')}</span><button class="link" data-act="change-steel">Change</button></div>
+          ${SPANS.map((sp, i) => { const x = sp.choices[S.now[i]].text, y = lbl(sp.choices[S.ideal[i]], 'ideal'); return `<div class="ans"><span class="t">${i + 1}. ${esc(sp.title)}</span><span class="c">${S.now[i] === S.ideal[i] ? esc(x) : `${esc(x)} → ${esc(y)}`}</span><button class="link" data-act="change-span" data-i="${i}" aria-label="Change your answers to ${esc(sp.title)}">Change</button></div>`; }).join('')}
+        </div>
+      </div>
+      <div class="row">
+        <button class="go" data-act="copy">Copy my report</button>
+        <button class="link" data-act="restart">Start again</button>
+      </div>
+      <div id="copyfall"></div>
+      <div class="stack" style="gap:8px">
+        <p class="label">Why steel, paint and hinges</p>
+        <p>The bridge lasts because its parts age at different speeds. The steel is built for a century. The paint is renewed span by span, for ever. And the arch rests on steel pins at its base: hinges that let it flex as it heats and cools. A program needs all three, and each needs to be governed differently.</p>
+      </div>
+      <details><summary>Sources</summary><ul>
+        <li>Lightcast, The Speed of Skill Change (2025).</li>
+        <li>GMAC, Corporate Recruiters Survey (2026).</li>
+        <li>Aerotek (2026), as cited in The 2027 Skills Horizon, Sydney Executive Plus.</li>
+        <li>Bastani et al., "Generative AI without guardrails can harm learning", PNAS (2025).</li>
+        <li>AMBA &amp; BGA, Never Stop Learning.</li>
+        <li>NUS Lifelong Learners (2018).</li>
+        <li>SBS News, "Robots take over Sydney Harbour Bridge" (17 July 2013).</li>
+      </ul></details>
+      <details><summary>About</summary>
+        <p>Made by Danika Wright for the AMBA &amp; BGA Asia Pacific Deans and Directors Conference, Singapore, November 2026, as a companion to the talk <i>Degrees of freedom: Preparing graduates to lead what comes next</i>.</p>
+        <p>The scores are a conversation starter, not a measurement. This page stores nothing and sends nothing.</p>
+      </details>`);
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(S.text);
+      const b = app.querySelector('[data-act="copy"]');
+      if (b) b.textContent = 'Copied';
+    } catch (e) {
+      const box = app.querySelector('#copyfall');
+      box.innerHTML = `<label class="small" for="reporttext">Select the text and copy it:</label><textarea id="reporttext" class="copybox" readonly>${esc(S.text)}</textarea>`;
+      const ta = box.querySelector('textarea'); ta.focus(); ta.select();
+    }
+  }
+
+  /* --------------------------------------------------------------- events */
+  app.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.disabled) return;
+    const act = b.dataset.act;
+    if (act === 'steel') steel();
+    else if (act === 'home') start();
+    else if (act === 'steelpick') steelPick(Number(b.dataset.i));
+    else if (act === 'begin') { S.span = 0; span(); }
+    else if (act === 'now' || act === 'ideal') answer(act, Number(b.dataset.i));
+    else if (act === 'back') { if (S.span === 0) steel(); else { S.span -= 1; span(); } }
+    else if (act === 'next') { if (S.span < SPANS.length - 1) { S.span += 1; span(); } else report(); }
+    else if (act === 'toreport') report();
+    else if (act === 'change-steel') { S.fromReport = true; steel(); }
+    else if (act === 'change-span') { S.fromReport = true; S.span = Number(b.dataset.i); span(); }
+    else if (act === 'copy') copy();
+    else if (act === 'restart') start();
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>
